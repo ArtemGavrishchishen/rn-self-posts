@@ -8,7 +8,9 @@ import {
   ScrollView,
   Alert,
 } from 'react-native'
+import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 
+import AppHeaderIcon from '../components/AppHeaderIcon'
 import THEME from '../theme'
 import { DATA } from '../data'
 
@@ -48,7 +50,21 @@ const PostScreen = ({ navigation }) => {
 
 PostScreen.navigationOptions = ({ navigation }) => {
   const date = navigation.getParam('date')
-  return { headerTitle: 'Пост от ' + new Date(date).toLocaleDateString() }
+  const booked = navigation.getParam('booked')
+
+  const iconName = booked ? 'ios-star' : 'ios-star-outline'
+  return {
+    headerTitle: 'Пост от ' + new Date(date).toLocaleDateString(),
+    headerRight: () => (
+      <HeaderButtons HeaderButtonComponent={AppHeaderIcon}>
+        <Item
+          title="Take photo"
+          iconName={iconName}
+          onPress={() => console.log('press photo')}
+        />
+      </HeaderButtons>
+    ),
+  }
 }
 
 const styles = StyleSheet.create({
