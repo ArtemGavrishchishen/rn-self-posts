@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useCallback } from 'react'
 import {
   Text,
   View,
@@ -8,15 +8,35 @@ import {
   ScrollView,
   Alert,
 } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 
 import AppHeaderIcon from '../components/AppHeaderIcon'
 import THEME from '../theme'
 import { DATA } from '../data'
+import { toggleBooked } from '../store/actions/post'
 
 const PostScreen = ({ navigation }) => {
   const postId = navigation.getParam('postId')
   const post = DATA.find(p => p.id === postId)
+
+  const dispatch = useDispatch()
+
+  const toggleHandler = useCallback(() => {
+    dispatch(toggleBooked(postId))
+  }, [dispatch, postId])
+
+  useEffect(() => {
+    navigation.setParams({ toggleHandler })
+  }, [toggleHandler])
+
+  const booked = useSelector(state =>
+    state.post.bookedPosts.some(post => post.id === postId)
+  )
+
+  useEffect(() => {
+    navigation.setParams({ booked })
+  }, [booked])
 
   const removeHandler = () => {
     Alert.alert(
@@ -51,17 +71,14 @@ const PostScreen = ({ navigation }) => {
 PostScreen.navigationOptions = ({ navigation }) => {
   const date = navigation.getParam('date')
   const booked = navigation.getParam('booked')
+  const toggleHandler = navigation.getParam('toggleHandler')
 
   const iconName = booked ? 'ios-star' : 'ios-star-outline'
   return {
     headerTitle: 'Пост от ' + new Date(date).toLocaleDateString(),
     headerRight: () => (
       <HeaderButtons HeaderButtonComponent={AppHeaderIcon}>
-        <Item
-          title="Take photo"
-          iconName={iconName}
-          onPress={() => console.log('press photo')}
-        />
+        <Item title="Take photo" iconName={iconName} onPress={toggleHandler} />
       </HeaderButtons>
     ),
   }

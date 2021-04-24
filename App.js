@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import AppLoading from 'expo-app-loading'
+import { Provider } from 'react-redux'
 import { LogBox } from 'react-native'
 
 import { AppNavigation } from './src/navigation/AppNavigation'
 import { bootstrap } from './src/bootstrap'
+import store from './src/store'
 
 LogBox.ignoreLogs([
   'It appears that you are using old version of react-navigation library',
@@ -21,5 +23,9 @@ export default function App() {
       />
     )
   }
-  return <AppNavigation />
+  return (
+    <Provider store={store}>
+      <AppNavigation />
+    </Provider>
+  )
 }
