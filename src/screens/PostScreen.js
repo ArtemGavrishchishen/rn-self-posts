@@ -13,12 +13,13 @@ import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 
 import AppHeaderIcon from '../components/AppHeaderIcon'
 import THEME from '../theme'
-import { DATA } from '../data'
-import { toggleBooked } from '../store/actions/post'
+import { removePost, toggleBooked } from '../store/actions/post'
 
 const PostScreen = ({ navigation }) => {
   const postId = navigation.getParam('postId')
-  const post = DATA.find(p => p.id === postId)
+  const post = useSelector(state =>
+    state.post.allPosts.find(p => p.id === postId)
+  )
 
   const dispatch = useDispatch()
 
@@ -47,10 +48,21 @@ const PostScreen = ({ navigation }) => {
           text: 'Отменить',
           style: 'cancel',
         },
-        { text: 'Удадить', style: 'destructive', onPress: () => {} },
+        {
+          text: 'Удадить',
+          style: 'destructive',
+          onPress: () => {
+            navigation.navigate('Main')
+            dispatch(removePost(postId))
+          },
+        },
       ],
       { cancelable: false }
     )
+  }
+
+  if (!post) {
+    return null
   }
 
   return (
