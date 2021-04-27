@@ -4,7 +4,6 @@ import {
   View,
   StyleSheet,
   TextInput,
-  Image,
   Button,
   ScrollView,
   TouchableWithoutFeedback,
@@ -16,23 +15,26 @@ import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 import { addPost } from '../store/actions/post'
 import AppHeaderIcon from '../components/AppHeaderIcon'
 import THEME from '../theme'
+import PhotoPicker from '../components/PhotoPicker'
 
 const CreateScreen = ({ navigation }) => {
   const [text, setText] = useState('')
+  const [image, setImage] = useState(null)
   const dispatch = useDispatch()
-
-  const img =
-    'https://cdn.londonandpartners.com/visit/general-london/areas/river/76709-640x360-houses-of-parliament-and-london-eye-on-thames-from-above-640.jpg'
 
   const saveHandler = () => {
     const post = {
-      img: img,
+      img: image,
       text: text,
       date: new Date().toJSON(),
       booked: false,
     }
     dispatch(addPost(post))
     navigation.navigate('Main')
+  }
+
+  const photoPickHandler = uri => {
+    setImage(uri)
   }
 
   return (
@@ -47,16 +49,12 @@ const CreateScreen = ({ navigation }) => {
             onChangeText={setText}
             multiline
           />
-          <Image
-            style={{ width: '100%', height: 200, marginBottom: 10 }}
-            source={{
-              uri: img,
-            }}
-          />
+          <PhotoPicker onPick={photoPickHandler} />
           <Button
             title="Создать пост"
             color={THEME.MAIN_COLOR}
             onPress={saveHandler}
+            disabled={!text || !image}
           />
         </View>
       </TouchableWithoutFeedback>
