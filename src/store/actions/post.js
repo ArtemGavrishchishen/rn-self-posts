@@ -1,10 +1,12 @@
+import { DB } from '../../db'
 import { ADD_POST, LOAD_POSTS, REMOVE_POST, TOGGLE_BOOKED } from '../types'
 
-export const loadPosts = () => {
-  return {
+export const loadPosts = () => async dispatch => {
+  const posts = await DB.getPosts()
+  dispatch({
     type: LOAD_POSTS,
-    payload: [],
-  }
+    payload: posts,
+  })
 }
 
 export const toggleBooked = id => {
@@ -21,10 +23,9 @@ export const removePost = id => {
   }
 }
 
-export const addPost = post => {
-  post.id = Date.now().toString()
-  return {
+export const addPost = post => dispatch => {
+  dispatch({
     type: ADD_POST,
     payload: post,
-  }
+  })
 }
