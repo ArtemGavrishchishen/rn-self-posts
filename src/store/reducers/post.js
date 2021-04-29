@@ -3,6 +3,7 @@ import { ADD_POST, LOAD_POSTS, REMOVE_POST, TOGGLE_BOOKED } from '../types'
 const initialState = {
   allPosts: [],
   bookedPosts: [],
+  loading: true,
 }
 
 const handlers = {
@@ -10,6 +11,7 @@ const handlers = {
     ...state,
     allPosts: payload,
     bookedPosts: payload.filter(post => post.booked),
+    loading: false,
   }),
   [TOGGLE_BOOKED]: (state, payload) => {
     const allPosts = state.allPosts.map(post => {

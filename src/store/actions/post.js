@@ -1,3 +1,4 @@
+import * as FileSystem from 'expo-file-system'
 import { DB } from '../../db'
 import { ADD_POST, LOAD_POSTS, REMOVE_POST, TOGGLE_BOOKED } from '../types'
 
@@ -9,23 +10,44 @@ export const loadPosts = () => async dispatch => {
   })
 }
 
-export const toggleBooked = id => {
-  return {
+export const toggleBooked = post => async dispatch => {
+  await DB.updatePosts(post)
+
+  dispatch({
     type: TOGGLE_BOOKED,
-    payload: id,
-  }
+    payload: post.id,
+  })
 }
 
-export const removePost = id => {
-  return {
+export const removePost = id => async dispatch => {
+  await DB.removePosts(id)
+
+  dispatch({
     type: REMOVE_POST,
     payload: id,
-  }
+  })
 }
 
-export const addPost = post => dispatch => {
+export const addPost = post => async dispatch => {
+  const fileName = post.img.split('/').pop()
+  const newPath = FileSystem.documentDirectory + fileName
+
+  try {
+    await FileSystem.moveAsync({
+      to: newPath,
+      from: post.img,
+    })
+  } catch (error) {
+    console.log('Error: ', error)
+  }
+
+  const payload = { ...post, img: newPath }
+
+  const id = await DB.createPosts(payload)
+  payload.id = id
+
   dispatch({
     type: ADD_POST,
-    payload: post,
+    payload,
   })
 }
